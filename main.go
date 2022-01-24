@@ -2,8 +2,11 @@ package main
 
 import (
 	"fmt"
+	"html/template"
 	"math"
 	"math/rand"
+	"net/http"
+	"net/url"
 	"reflect"
 	"runtime"
 	"strings"
@@ -30,8 +33,11 @@ func main() {
 	//exInterface()
 	//exReflect
 	//exGoroutine()
-	exStringFormat()
-	exTime()
+	//exStringFormat()
+	//exTime()
+	//exWebServer()
+	//exWebServer2()
+	exURLParsing()
 }
 
 func exVariable() {
@@ -744,5 +750,60 @@ func exTime() {
 
 	time2 := time.Date(2022, 05, 21, 12, 34, 10, 0, time.UTC)
 	fmt.Printf("Date Time : %v \n", time2)
+
+}
+
+// func index(w http.ResponseWriter, r *http.Request) {
+// 	fmt.Fprintln(w, "apa kabar!")
+// }
+
+// func exWebServer() {
+// 	//http.HandleFunc() Berfungsi untuk routing aplikasi web. yang artinya menentukan aksi ketika url tsb diakses oleh user
+// 	// Ada 2 param yang harus diisi. yang pertama rute yang diinginkan (/) dan yang kedua adalah aksi saat rute itu diakses
+// 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+// 		fmt.Fprintln(w, "Halo!")
+// 	})
+// 	http.HandleFunc("/index", index)
+// 	//http.listenAndServe adigunakan untuk menghidupkan server sekaligus menjalankan aplikasi menggunakan server tsb.
+
+// 	fmt.Println("Starting web server at http://localhost:8080/")
+// 	http.ListenAndServe(":8080", nil)
+// }
+
+func exWebServer2() {
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		var data = map[string]string{
+			"Name": "Arif LEsmana",
+			"Msg":  "Have a niceday",
+		}
+		var t, err = template.ParseFiles("template.html")
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+
+		t.Execute(w, data)
+	})
+
+	fmt.Println("Starting web server at http://localhost:8080/")
+	http.ListenAndServe(":8080", nil)
+}
+
+func exURLParsing() {
+	var urlString = "http://kalipare.com:80/hello?name=john wick&age=27"
+	var u, e = url.Parse(urlString)
+	if e != nil {
+		fmt.Println(e.Error())
+		return
+	}
+	fmt.Println("url:%s\n", urlString)
+
+	fmt.Printf("Protocol : %s\n", u.Scheme)
+	fmt.Printf("host : %s\n", u.Host)
+	fmt.Printf("Path : %s\n", u.Path)
+
+	var name = u.Query()["name"][0]
+	var age = u.Query()["age"][0]
+	fmt.Printf("Name: %s, Age: %s\n", name, age)
 
 }
